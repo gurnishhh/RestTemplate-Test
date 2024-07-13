@@ -17,4 +17,5 @@ public interface Service {
 	BankDetails deposit(int id , double amount);
 	
 	BankDetails withdrawl(int id, double amount);
+	
 }

@@ -7,7 +7,11 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
 import com.example.demo.bankrepository.Repository;
+import com.example.demo.model.EmailRequest;
 import com.example.demo.model.BankDetails;
 import com.example.demo.service.Service;
 
@@ -45,6 +50,15 @@ public class MainController {
 	public String welcome() {
 		String emailResponse = restTemplate.getForObject("http://localhost:8081/welcome", String.class);
 		
+		
+		 EmailRequest emailRequest = new EmailRequest("gurnishchhabra27@gmail.com", "TestSubject", "TestBody");
+         HttpEntity<EmailRequest> request = new HttpEntity<>(emailRequest);
+	        
+         
+       ResponseEntity response =  restTemplate.postForEntity("http://localhost:8081/sendMail", request, String.class);
+		
+       System.out.println(response.getBody());
+       
 		return "Welcome to Banking System   -----" + emailResponse;
 	}
 	
