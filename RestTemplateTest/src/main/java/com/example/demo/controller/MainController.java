@@ -34,22 +34,28 @@ public class MainController {
 	@Autowired
 	 Repository repo;
 	
+		
+		  @Autowired 
+		  RestTemplate restTemplate;
+		 
 	  
-
-	  private final RestTemplate restTemplate;
-	  
-	  @Autowired
-	    public MainController(RestTemplate restTemplate) {
-	        this.restTemplate = restTemplate;
-	    }
+		/*
+		 * @Autowired public MainController(@ RestTemplate restTemplate) {
+		 * this.restTemplate = restTemplate; }
+		 */
 	
 	@Autowired
 	private Service service;
 	
 	@RequestMapping("/welcome")
 	public String welcome() {
+       
+		return "Welcome to Banking System   -----";
+	}
+	
+	@RequestMapping("/email")
+	public String email() {
 		String emailResponse = restTemplate.getForObject("http://localhost:8081/welcome", String.class);
-		
 		
 		 EmailRequest emailRequest = new EmailRequest("gurnishchhabra27@gmail.com", "TestSubject", "TestBody");
          HttpEntity<EmailRequest> request = new HttpEntity<>(emailRequest);
@@ -59,7 +65,7 @@ public class MainController {
 		
        System.out.println(response.getBody());
        
-		return "Welcome to Banking System   -----" + emailResponse;
+		return  emailResponse;
 	}
 	
 	@PostMapping("/insert")
