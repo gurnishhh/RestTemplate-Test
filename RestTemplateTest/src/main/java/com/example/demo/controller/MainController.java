@@ -50,12 +50,14 @@ public class MainController {
 	@RequestMapping("/welcome")
 	public String welcome() {
        
-		return "Welcome to Banking System   -----";
+		String emailResponse = restTemplate.getForObject("http://localhost:8081/welcome", String.class);
+		
+		return "Welcome to Banking System   -----  " + emailResponse;
 	}
 	
 	@RequestMapping("/email")
-	public String email() {
-		String emailResponse = restTemplate.getForObject("http://localhost:8081/welcome", String.class);
+	public ResponseEntity email() {
+		
 		
 		 EmailRequest emailRequest = new EmailRequest("gurnishchhabra27@gmail.com", "TestSubject", "TestBody");
          HttpEntity<EmailRequest> request = new HttpEntity<>(emailRequest);
@@ -65,7 +67,7 @@ public class MainController {
 		
        System.out.println(response.getBody());
        
-		return  emailResponse;
+		return  response;
 	}
 	
 	@PostMapping("/insert")
@@ -122,6 +124,12 @@ public class MainController {
 		
 		
 		return bank;
+	}
+	
+	@PostMapping("/transfer/{from}/{to}/{amount}")
+	public String transfer(@PathVariable int from, @PathVariable int to, @PathVariable double amount)
+	{
+		return service.Transfer(from, to, amount);
 	}
 	
 	

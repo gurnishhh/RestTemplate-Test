@@ -18,4 +18,6 @@ public interface Service {
 	
 	BankDetails withdrawl(int id, double amount);
 	
+	public String Transfer(int fromAccountId, int toAccountId, double amount);
+	
 }

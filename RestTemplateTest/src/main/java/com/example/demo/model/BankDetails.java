@@ -23,15 +23,19 @@ public class BankDetails {
 	private Long id;
 	
 	private String name;
-	 
+	private String email;
 	 private Double balance;
+		
 
-	public BankDetails(Long id, String name, int balance) {
+	public BankDetails(Long id, String name, String email, Double balance) {
 		super();
 		this.id = id;
 		this.name = name;
-		this.balance = (double) balance;
+		this.email = email;
+		this.balance = balance;
 	}
+
+
 
 	public BankDetails() {
 		super();
@@ -61,12 +65,31 @@ public class BankDetails {
 	public void setBalance(Double totalBalance) {
 		this.balance = totalBalance;
 	}
+	
+	
+
+	public String getEmail() {
+		return email;
+	}
+
+
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
+
 
 	@Override
 	public String toString() {
-		return "BankDetails [id=" + id + ", name=" + name + ", balance=" + balance + "]";
+		return "BankDetails [id=" + id + ", name=" + name + ", email=" + email + ", balance=" + balance + "]";
 	}
+
+
+
+	
 	 
+	
 	 
 	 
 	

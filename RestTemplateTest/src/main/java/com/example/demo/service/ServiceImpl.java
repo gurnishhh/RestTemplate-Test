@@ -4,9 +4,12 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
+import org.springframework.web.client.RestTemplate;
 
 import com.example.demo.bankrepository.Repository;
 import com.example.demo.model.BankDetails;
+import com.example.demo.model.EmailRequest;
 
 
 @org.springframework.stereotype.Service
@@ -14,6 +17,9 @@ public class ServiceImpl implements Service {
 
 	@Autowired
 	private Repository repo;
+	
+	@Autowired 
+	  RestTemplate restTemplate;
 	
 	@Override
 	public BankDetails createAccount(BankDetails acc) {
@@ -61,6 +67,9 @@ public class ServiceImpl implements Service {
 	@Override
 	public BankDetails deposit(int id, double amount) {
 		
+		
+		
+		
 		Optional<BankDetails> bank =	repo.findById(id);
 		
 			if(bank.isEmpty())
@@ -74,7 +83,14 @@ public class ServiceImpl implements Service {
 			bankPresent.setBalance(totalBalance);
 			
 			repo.save(bankPresent);
-
+			
+			String useremail = bankPresent.getEmail();
+			
+			EmailRequest emailRequest = new EmailRequest(useremail, " Deposit Confirmation", "Your deposit of " + amount + "Rs was successful.");
+			HttpEntity<EmailRequest> request = new HttpEntity<>(emailRequest);
+			
+			restTemplate.postForObject("http://localhost:8081/sendMail",request, String.class);
+			
 		return bankPresent;
 	}
 
@@ -99,6 +115,13 @@ public class ServiceImpl implements Service {
 		else {
 		bankPresent.setBalance(newBalance);
 		
+		String useremail = bankPresent.getEmail();
+		
+		EmailRequest emailRequest = new EmailRequest(useremail, " Withdrawl Confirmation", "Your withdrawl of " + amount + "rs was successful.");
+		HttpEntity<EmailRequest> request = new HttpEntity<>(emailRequest);
+		
+		restTemplate.postForObject("http://localhost:8081/sendMail",request, String.class);
+		
 		repo.save(bankPresent);
 		}
 		
@@ -106,5 +129,34 @@ public class ServiceImpl implements Service {
 		return bankPresent;
 	}
 
+	@Override
+	public String Transfer(int fromAccountId, int toAccountId, double amount) {
+		
+		BankDetails fromAccount = fetchBankDetailsById(fromAccountId);
+		BankDetails toAccount = fetchBankDetailsById(toAccountId);
+		
+		if(fromAccount.getBalance() < amount) {
+			return "insufficient balance";
+		}
+		
+		fromAccount.setBalance( fromAccount.getBalance() - amount );
+		toAccount.setBalance( toAccount.getBalance() + amount );
+		
+		
+		saveBankDetails(fromAccount);
+		saveBankDetails(toAccount);
+		
+		
+		return "Transfer Successful";
+	}
+	
+	private BankDetails fetchBankDetailsById(int id) {
+		return repo.findById(id).orElseThrow(()-> new RuntimeException("Account not found"));
+	}
 
+	private void saveBankDetails(BankDetails bankDetails) {
+        repo.save(bankDetails);
+    }
+	
+	
 }
