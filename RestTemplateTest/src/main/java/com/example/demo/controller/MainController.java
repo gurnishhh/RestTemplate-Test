@@ -70,7 +70,7 @@ public class MainController {
 		return  response;
 	}
 	
-	@PostMapping("/insert")
+	@PostMapping("/register")
 	public String insert(@RequestBody BankDetails bank) {
 		
 		service.createAccount(bank);
