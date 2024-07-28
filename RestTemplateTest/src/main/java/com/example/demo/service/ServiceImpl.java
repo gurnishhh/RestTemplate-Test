@@ -3,6 +3,8 @@ package com.example.demo.service;
 import java.util.List;
 import java.util.Optional;
 
+
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.web.client.RestTemplate;
@@ -65,33 +67,28 @@ public class ServiceImpl implements Service {
 	}
 
 	@Override
-	public BankDetails deposit(int id, double amount) {
+	public BankDetails deposit(int accountNumber, double amount) {
 		
 		
+		BankDetails account = fetchBankDetailsById(accountNumber);
 		
+		 if (account == null) {
+	            throw new IllegalArgumentException("Account not found");
+	        }
 		
-		Optional<BankDetails> bank =	repo.findById(id);
-		
-			if(bank.isEmpty())
-			{
-				throw new RuntimeException("Account with this ID is not present.");
-			}
-				BankDetails bankPresent = bank.get();
-				
-			double totalBalance = bankPresent.getBalance() + amount ;
+			account.setBalance( account.getBalance() + amount );
+			saveBankDetails(account);
 			
-			bankPresent.setBalance(totalBalance);
-			
-			repo.save(bankPresent);
-			
-			String useremail = bankPresent.getEmail();
+			String useremail = account.getEmail();
 			
 			EmailRequest emailRequest = new EmailRequest(useremail, " Deposit Confirmation", "Your deposit of " + amount + "Rs was successful.");
 			HttpEntity<EmailRequest> request = new HttpEntity<>(emailRequest);
 			
 			restTemplate.postForObject("http://localhost:8081/sendMail",request, String.class);
 			
-		return bankPresent;
+			return account;
+			
+		
 	}
 
 	@Override
@@ -150,12 +147,12 @@ public class ServiceImpl implements Service {
 		return "Transfer Successful";
 	}
 	
-	private BankDetails fetchBankDetailsById(int id) {
-		return repo.findById(id).orElseThrow(()-> new RuntimeException("Account not found"));
+	private BankDetails fetchBankDetailsById(int accountNumber) {
+		return repo.findById(accountNumber).orElseThrow(()-> new RuntimeException("Account not found"));
 	}
 
-	private void saveBankDetails(BankDetails bankDetails) {
-        repo.save(bankDetails);
+	private void saveBankDetails(BankDetails account) {
+        repo.save(account);
     }
 	
 	

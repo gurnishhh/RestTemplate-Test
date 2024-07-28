@@ -19,11 +19,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
 import com.example.demo.bankrepository.Repository;
+import com.example.demo.dto.DepositRequest;
 import com.example.demo.model.EmailRequest;
+import com.example.demo.model.TransferRequest;
 import com.example.demo.model.BankDetails;
 import com.example.demo.service.Service;
 
@@ -116,6 +119,20 @@ public class MainController {
 		
 	}
 	
+	@PostMapping("/deposit")
+	public ResponseEntity<BankDetails> depositBalance2(@RequestBody DepositRequest depositRequest)
+	{	
+		
+			
+			BankDetails updatedAccount = service.deposit(depositRequest.getAccountNumber(), depositRequest.getAmount());
+			
+			return ResponseEntity.ok(updatedAccount);
+		
+		
+	}
+	
+	
+	
 	@PutMapping("/withdrawl/{id}/{amount}")
 	public BankDetails withdrawlBalance(@PathVariable int id, @PathVariable double amount)
 	{
@@ -130,6 +147,17 @@ public class MainController {
 	public String transfer(@PathVariable int from, @PathVariable int to, @PathVariable double amount)
 	{
 		return service.Transfer(from, to, amount);
+	}
+	
+	@PostMapping("/transfer")
+	public ResponseEntity<String> transfer2(@RequestBody TransferRequest transferRequest)
+	{
+		service.Transfer(transferRequest.getFromAccount(), 
+				transferRequest.getToAccount(), 
+				transferRequest.getAmount()
+				);
+		
+		return ResponseEntity.ok("Transfer successful");
 	}
 	
 	

@@ -14,7 +14,7 @@ public interface Service {
 
 	String deleteAccount (int id);
 	
-	BankDetails deposit(int id , double amount);
+	BankDetails deposit(int accountNumber , double amount);
 	
 	BankDetails withdrawl(int id, double amount);
 	
